@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Coliseum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <span class="eyebrow">Live agent duel &middot; built for the BCP AI talk</span>
+    <h1>Agent&nbsp;Coliseum</h1>
+    <p class="tagline">Same question. Same knowledge base. Three different ways to think.</p>
+  </header>
+
+  <form class="control-bar" id="duel-form">
+    <input type="text" id="topic-input" name="topic" placeholder="Enter a topic — e.g. Peruvian history" autocomplete="off" required>
+    <button type="submit" id="fight-btn"><span>Enter the ring</span></button>
+  </form>
+
+  <div class="quick-picks" aria-label="Example topics">
+    <span class="quick-picks-label">Try</span>
+    <button type="button" class="chip" data-topic="Peruvian history">Peruvian history</button>
+    <button type="button" class="chip" data-topic="Amazon rainforest geography">Amazon geography</button>
+    <button type="button" class="chip" data-topic="Mexican culture">Mexican culture</button>
+    <button type="button" class="chip" data-topic="Brazilian economy">Brazilian economy</button>
+    <button type="button" class="chip" data-topic="Latin American football">LatAm football</button>
+  </div>
+
+  <div class="arena" id="arena">
+    {% for f in fighters %}
+    <article class="fighter" data-fighter="{{ f.id }}" style="--accent: {{ f.color }}">
+      <header class="fighter-head">
+        <span class="fighter-avatar" aria-hidden="true">{{ f.avatar }}</span>
+        <div class="fighter-heading">
+          <h2 class="fighter-name">{{ f.name }}</h2>
+          <p class="fighter-tag">{{ f.tag }}</p>
+        </div>
+        <span class="fighter-state" data-role="state-pill">idle</span>
+      </header>
+
+      <p class="fighter-desc">{{ f.description }}</p>
+
+      <div class="fighter-body" data-role="body">
+        <p class="idle-msg">Waiting for a topic to enter the ring.</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

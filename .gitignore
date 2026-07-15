@@ -1,0 +1,21 @@
+.env
+.env.*
+!.env.example
+
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.claude/
+
+# Project-local notes and AzureML bootstrap glue — reference internal
+# Credicorp resource/subscription IDs and (in Untitled.ipynb's case) a
+# live Azure API key + ngrok token hardcoded in cell source. Neither
+# belongs in a public repo; see local CLAUDE.md itself: "temporary...
+# do not port elsewhere."
+CLAUDE.md
+Untitled.ipynb
+
+# AzureML compute instance's full 692-package environment freeze —
+# not this project's actual dependencies (pyproject.toml / uv.lock are).
+requirements.txt
