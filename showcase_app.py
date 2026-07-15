@@ -42,7 +42,7 @@ def _duel_one(fighter: dict, topic: str) -> dict:
             opponent_name="Rival", my_scores=[], opponent_scores=[],
         )
         question_trace = agent.think(asker_ctx)
-        question = agent._extract_final(question_trace)
+        question = agent._extract_final(question_trace, "asker")
 
         answerer_ctx = MatchContext(
             match_id="showcase", topic=topic, turn=1, total_turns=1, role="answerer",
@@ -51,7 +51,7 @@ def _duel_one(fighter: dict, topic: str) -> dict:
             current_question=question,
         )
         answer_trace = agent.think(answerer_ctx)
-        answer = agent._extract_final(answer_trace)
+        answer = agent._extract_final(answer_trace, "answerer")
 
         return {
             "id": fighter["id"],
