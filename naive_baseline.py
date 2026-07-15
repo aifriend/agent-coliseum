@@ -61,12 +61,12 @@ FINAL [Shinn et al. 2023 -- Reflexion]: <your {'question' if ctx.role == 'asker'
         return response.choices[0].message.content.strip()
 
     def ask(self, ctx: MatchContext) -> str:
-        return self._extract_final(self.think(ctx))
+        return self._extract_final(self.think(ctx), ctx.role)
 
     def answer(self, ctx: MatchContext) -> str:
-        return self._extract_final(self.think(ctx))
+        return self._extract_final(self.think(ctx), ctx.role)
 
-    def _extract_final(self, text: str) -> str:
+    def _extract_final(self, text: str, role: str = "") -> str:
         lines = text.split("\n")
         for i, line in enumerate(lines):
             clean = line.replace("**", "").strip()
@@ -77,12 +77,36 @@ FINAL [Shinn et al. 2023 -- Reflexion]: <your {'question' if ctx.role == 'asker'
                 if after:
                     return after
                 for j in range(i + 1, len(lines)):
-                    if lines[j].strip():
-                        return lines[j].strip()
-        for line in reversed(lines):
-            if line.strip() and not line.strip().startswith("#"):
-                return line.strip()
-        return text.strip()
+                    candidate = lines[j].replace("**", "").strip()
+                    if candidate:
+                        return candidate
+        # No FINAL label: the model skipped the scaffold and answered
+        # directly (the common case for this model in a single-message
+        # prompt). Don't grab the last line blindly — if the model
+        # partially followed the scaffold and trailed off after CRITIQUE
+        # with no FINAL, "last line" returns the critique, not the
+        # question/answer. Prefer content shaped like the expected output,
+        # and strip any leading SITUATION:/DRAFT:/etc. label so a
+        # matched line reads clean, same as the FINAL branch above.
+        substantive = []
+        for l in lines:
+            s = l.replace("**", "").strip()
+            if not s or s.startswith("#"):
+                continue
+            s = re.sub(
+                r"^(SITUATION|OPPONENT|GOAL|DRAFT|CRITIQUE|FINAL)\s*(\[.*?\])?\s*:\s*",
+                "", s, flags=re.IGNORECASE,
+            ).strip()
+            if s:
+                substantive.append(s)
+        if not substantive:
+            return text.strip()
+        if role == "asker":
+            for line in reversed(substantive):
+                if line.endswith("?"):
+                    return line
+            return substantive[-1]
+        return substantive[0]
 
 
 def _keepalive(arena_url):
