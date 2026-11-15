@@ -33,11 +33,14 @@ NGROK_TOKEN = os.environ.get("NGROK_TOKEN", "")
 client = OpenAI(base_url=AZURE_BASE_URL, api_key=AZURE_API_KEY)
 
 
-def build_rag_index(facts_path="latam_facts.jsonl", max_facts=50):
+FACTS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "latam_facts.jsonl")
+
+
+def build_rag_index(facts_path=FACTS_PATH, max_facts=50):
     if not os.path.exists(facts_path):
         facts_path = os.path.join("..", "data", "latam_facts.jsonl")
     facts = []
-    with open(facts_path) as f:
+    with open(facts_path, encoding="utf-8") as f:
         for line in f:
             if line.strip():
                 facts.append(json.loads(line))
